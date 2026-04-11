@@ -2,12 +2,14 @@
 
 interface DeleteConfirmModalProps {
   orderId: string;
+  label?: string;
   onConfirm: () => void;
   onCancel: () => void;
 }
 
 export default function DeleteConfirmModal({
   orderId,
+  label = "order",
   onConfirm,
   onCancel,
 }: DeleteConfirmModalProps) {
@@ -30,18 +32,18 @@ export default function DeleteConfirmModal({
             />
           </svg>
         </div>
-        <h3 className="mb-1 text-center text-lg font-semibold text-gray-900">
-          Delete Order
+        <h3 className="mb-1 text-center text-lg font-semibold text-slate-900">
+          Delete {label.charAt(0).toUpperCase() + label.slice(1)}
         </h3>
-        <p className="mb-6 text-center text-sm text-gray-500">
-          Are you sure you want to delete order{" "}
-          <span className="font-semibold text-gray-700">{orderId}</span>? This
+        <p className="mb-6 text-center text-sm text-slate-500">
+          Are you sure you want to delete {label}{" "}
+          <span className="font-semibold text-slate-700">{orderId}</span>? This
           action cannot be undone.
         </p>
         <div className="flex gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
           >
             Cancel
           </button>
