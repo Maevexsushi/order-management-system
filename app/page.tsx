@@ -44,9 +44,9 @@ export default function Home() {
     <>
       {/* Page Header */}
       <div className="border-b border-slate-200 bg-white px-8 py-6">
-        <h1 className="text-xl font-bold text-slate-900">Orders Dashboard</h1>
+        <h1 className="text-xl font-bold text-slate-900">Dashboard</h1>
         <p className="mt-1 text-sm text-slate-500">
-          Overview of all your orders and revenue
+          Overview of your orders and revenue
         </p>
       </div>
 
@@ -83,9 +83,10 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Orders Table */}
+        {/* Recent Orders (last 5) */}
         <OrderTable
-          orders={orders}
+          orders={[...orders].reverse().slice(0, 5)}
+          title="Recent Orders"
           onStatusChange={handleStatusChange}
           onDelete={(id) => setDeleteTarget(id)}
         />

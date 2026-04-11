@@ -14,12 +14,14 @@ const statuses: OrderStatus[] = [
 
 interface OrderTableProps {
   orders: Order[];
+  title?: string;
   onStatusChange: (id: string, status: OrderStatus) => void;
   onDelete: (id: string) => void;
 }
 
 export default function OrderTable({
   orders,
+  title = "All Orders",
   onStatusChange,
   onDelete,
 }: OrderTableProps) {
@@ -67,7 +69,7 @@ export default function OrderTable({
             />
           </svg>
           <h2 className="text-base font-semibold text-slate-900">
-            All Orders
+            {title}
           </h2>
           <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
             {orders.length}

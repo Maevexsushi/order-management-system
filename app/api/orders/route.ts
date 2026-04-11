@@ -1,9 +1,11 @@
 import { promises as fs } from "fs";
 import path from "path";
 import type { Order } from "@/types/order";
+import type { Product } from "@/types/product";
 import { generateId } from "@/utils/generateId";
 
 const dataFilePath = path.join(process.cwd(), "data", "orders.json");
+const productsFilePath = path.join(process.cwd(), "data", "products.json");
 
 async function getOrders(): Promise<Order[]> {
   const data = await fs.readFile(dataFilePath, "utf-8");
@@ -28,6 +30,24 @@ export async function POST(request: Request) {
       { error: "All fields are required" },
       { status: 400 }
     );
+  }
+
+  // Check stock and deduct if product exists in catalog
+  const productsData = await fs.readFile(productsFilePath, "utf-8");
+  const products: Product[] = JSON.parse(productsData);
+  const productIndex = products.findIndex((p) => p.name === product);
+
+  if (productIndex !== -1) {
+    if (products[productIndex].stock < Number(quantity)) {
+      return Response.json(
+        {
+          error: `Insufficient stock. Only ${products[productIndex].stock} available.`,
+        },
+        { status: 400 }
+      );
+    }
+    products[productIndex].stock -= Number(quantity);
+    await fs.writeFile(productsFilePath, JSON.stringify(products, null, 2));
   }
 
   const orders = await getOrders();

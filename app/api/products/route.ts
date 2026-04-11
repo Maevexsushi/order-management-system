@@ -30,11 +30,11 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { name, price, category } = body;
+  const { name, price, stock, category } = body;
 
-  if (!name || !price) {
+  if (!name || !price || stock === undefined) {
     return Response.json(
-      { error: "Product name and price are required" },
+      { error: "Product name, price, and stock are required" },
       { status: 400 }
     );
   }
@@ -44,6 +44,7 @@ export async function POST(request: Request) {
     id: generateProductId(products),
     name,
     price: Number(price),
+    stock: Number(stock),
     category: category || "General",
     createdAt: new Date().toISOString().split("T")[0],
   };
@@ -52,6 +53,34 @@ export async function POST(request: Request) {
   await saveProducts(products);
 
   return Response.json(newProduct, { status: 201 });
+}
+
+export async function PUT(request: Request) {
+  const body = await request.json();
+  const { id, name, price, stock, category } = body;
+
+  if (!id) {
+    return Response.json(
+      { error: "Product ID is required" },
+      { status: 400 }
+    );
+  }
+
+  const products = await getProducts();
+  const index = products.findIndex((p) => p.id === id);
+
+  if (index === -1) {
+    return Response.json({ error: "Product not found" }, { status: 404 });
+  }
+
+  if (name !== undefined) products[index].name = name;
+  if (price !== undefined) products[index].price = Number(price);
+  if (stock !== undefined) products[index].stock = Number(stock);
+  if (category !== undefined) products[index].category = category;
+
+  await saveProducts(products);
+
+  return Response.json(products[index]);
 }
 
 export async function DELETE(request: Request) {

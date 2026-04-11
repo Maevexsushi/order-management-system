@@ -1,1 +1,42 @@
-[]
+[
+  {
+    "id": "PRD-001",
+    "name": "pochie",
+    "price": 200,
+    "category": "cat",
+    "createdAt": "2026-04-11",
+    "stock": 50
+  },
+  {
+    "id": "PRD-002",
+    "name": "idlat atul",
+    "price": 300,
+    "category": "cat",
+    "createdAt": "2026-04-11",
+    "stock": 500
+  },
+  {
+    "id": "PRD-003",
+    "name": "hopia",
+    "price": 7,
+    "category": "cat",
+    "createdAt": "2026-04-11",
+    "stock": 300
+  },
+  {
+    "id": "PRD-004",
+    "name": "bagwis",
+    "price": 40,
+    "category": "cat",
+    "createdAt": "2026-04-11",
+    "stock": 83
+  },
+  {
+    "id": "PRD-005",
+    "name": "Sparkler Pack",
+    "price": 150,
+    "stock": 45,
+    "category": "Party Supplies",
+    "createdAt": "2026-04-11"
+  }
+]

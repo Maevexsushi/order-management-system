@@ -4,14 +4,17 @@ import { useEffect, useState, useCallback } from "react";
 import type { Product } from "@/types/product";
 import { formatCurrency } from "@/utils/formatCurrency";
 import DeleteConfirmModal from "@/components/DeleteConfirmModal";
+import EditProductModal from "@/components/EditProductModal";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
+  const [stock, setStock] = useState("");
   const [category, setCategory] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [editTarget, setEditTarget] = useState<Product | null>(null);
 
   const fetchProducts = useCallback(async () => {
     const res = await fetch("/api/products");
@@ -33,6 +36,7 @@ export default function ProductsPage() {
       body: JSON.stringify({
         name,
         price: Number(price),
+        stock: Number(stock),
         category: category || "General",
       }),
     });
@@ -40,6 +44,7 @@ export default function ProductsPage() {
     if (res.ok) {
       setName("");
       setPrice("");
+      setStock("");
       setCategory("");
       fetchProducts();
     }
@@ -51,6 +56,11 @@ export default function ProductsPage() {
     if (!deleteTarget) return;
     await fetch(`/api/products?id=${deleteTarget}`, { method: "DELETE" });
     setDeleteTarget(null);
+    fetchProducts();
+  }
+
+  function handleEditSave() {
+    setEditTarget(null);
     fetchProducts();
   }
 
@@ -91,7 +101,7 @@ export default function ProductsPage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <label className="mb-1.5 block text-sm font-medium text-slate-700">
                 Product Name
@@ -117,6 +127,20 @@ export default function ProductsPage() {
                 min={1}
                 className="w-full rounded-lg border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 transition-colors focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 placeholder="0.00"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                Stock
+              </label>
+              <input
+                type="number"
+                value={stock}
+                onChange={(e) => setStock(e.target.value)}
+                required
+                min={0}
+                className="w-full rounded-lg border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 transition-colors focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                placeholder="0"
               />
             </div>
             <div>
@@ -215,6 +239,7 @@ export default function ProductsPage() {
                     <th className="px-6 py-3">Product ID</th>
                     <th className="px-6 py-3">Name</th>
                     <th className="px-6 py-3">Price</th>
+                    <th className="px-6 py-3">Stock</th>
                     <th className="px-6 py-3">Category</th>
                     <th className="px-6 py-3">Date Added</th>
                     <th className="px-6 py-3 text-right">Actions</th>
@@ -236,6 +261,21 @@ export default function ProductsPage() {
                         {formatCurrency(product.price)}
                       </td>
                       <td className="px-6 py-4">
+                        <span
+                          className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${
+                            product.stock === 0
+                              ? "bg-red-50 text-red-700 ring-red-600/20"
+                              : product.stock <= 10
+                                ? "bg-amber-50 text-amber-700 ring-amber-600/20"
+                                : "bg-green-50 text-green-700 ring-green-600/20"
+                          }`}
+                        >
+                          {product.stock === 0
+                            ? "Out of stock"
+                            : `${product.stock} in stock`}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
                         <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
                           {product.category}
                         </span>
@@ -244,25 +284,46 @@ export default function ProductsPage() {
                         {product.createdAt}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button
-                          onClick={() => setDeleteTarget(product.id)}
-                          className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
-                          title="Delete product"
-                        >
-                          <svg
-                            className="h-4 w-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => setEditTarget(product)}
+                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-blue-50 hover:text-blue-600"
+                            title="Edit product"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-                            />
-                          </svg>
-                        </button>
+                            <svg
+                              className="h-4 w-4"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={1.5}
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => setDeleteTarget(product.id)}
+                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                            title="Delete product"
+                          >
+                            <svg
+                              className="h-4 w-4"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth={1.5}
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                              />
+                            </svg>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -273,7 +334,16 @@ export default function ProductsPage() {
         )}
       </div>
 
-      {/* Delete Confirm Modal (reused) */}
+      {/* Edit Product Modal */}
+      {editTarget && (
+        <EditProductModal
+          product={editTarget}
+          onSave={handleEditSave}
+          onCancel={() => setEditTarget(null)}
+        />
+      )}
+
+      {/* Delete Confirm Modal */}
       {deleteTarget && (
         <DeleteConfirmModal
           orderId={deleteTarget}
