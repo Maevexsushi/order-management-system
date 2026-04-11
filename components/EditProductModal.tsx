@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Product } from "@/types/product";
+import ImageUpload from "./ImageUpload";
 
 interface EditProductModalProps {
   product: Product;
@@ -18,6 +19,7 @@ export default function EditProductModal({
   const [price, setPrice] = useState(String(product.price));
   const [stock, setStock] = useState(String(product.stock));
   const [category, setCategory] = useState(product.category);
+  const [image, setImage] = useState(product.image || "");
   const [saving, setSaving] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -33,6 +35,7 @@ export default function EditProductModal({
         price: Number(price),
         stock: Number(stock),
         category,
+        image,
       }),
     });
 
@@ -69,6 +72,14 @@ export default function EditProductModal({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Image Upload */}
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">
+              Photo
+            </label>
+            <ImageUpload value={image} onChange={setImage} />
+          </div>
+
           <div>
             <label className="mb-1.5 block text-sm font-medium text-slate-700">
               Product Name

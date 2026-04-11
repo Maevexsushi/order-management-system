@@ -30,7 +30,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { name, price, stock, category } = body;
+  const { name, price, stock, category, image } = body;
 
   if (!name || !price || stock === undefined) {
     return Response.json(
@@ -46,6 +46,7 @@ export async function POST(request: Request) {
     price: Number(price),
     stock: Number(stock),
     category: category || "General",
+    image: image || "",
     createdAt: new Date().toISOString().split("T")[0],
   };
 
@@ -57,7 +58,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   const body = await request.json();
-  const { id, name, price, stock, category } = body;
+  const { id, name, price, stock, category, image } = body;
 
   if (!id) {
     return Response.json(
@@ -77,6 +78,7 @@ export async function PUT(request: Request) {
   if (price !== undefined) products[index].price = Number(price);
   if (stock !== undefined) products[index].stock = Number(stock);
   if (category !== undefined) products[index].category = category;
+  if (image !== undefined) products[index].image = image;
 
   await saveProducts(products);
 

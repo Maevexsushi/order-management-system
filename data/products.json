@@ -13,7 +13,8 @@
     "price": 300,
     "category": "cat",
     "createdAt": "2026-04-11",
-    "stock": 500
+    "stock": 500,
+    "image": "/uploads/1775936337541-r2b02p.jpeg"
   },
   {
     "id": "PRD-003",
@@ -37,6 +38,16 @@
     "price": 150,
     "stock": 45,
     "category": "Party Supplies",
+    "createdAt": "2026-04-11",
+    "image": "/uploads/1775936186641-7n0ivl.jpeg"
+  },
+  {
+    "id": "PRD-006",
+    "name": "baho",
+    "price": 1000,
+    "stock": 1,
+    "category": "tae",
+    "image": "/uploads/1775936076522-fsa7j8.png",
     "createdAt": "2026-04-11"
   }
 ]

@@ -1,0 +1,9 @@
+[
+  {
+    "id": "USR-001",
+    "name": "Admin",
+    "email": "admin@orderms.com",
+    "password": "admin123",
+    "role": "Administrator"
+  }
+]
