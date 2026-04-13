@@ -9,6 +9,7 @@ export interface Order {
   id: string;
   customerName: string;
   product: string;
+  productImage?: string;
   quantity: number;
   price: number;
   total: number;

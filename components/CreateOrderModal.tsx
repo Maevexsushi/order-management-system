@@ -1,7 +1,155 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { Product } from "@/types/product";
+
+function ProductSelector({
+  products,
+  value,
+  onSelect,
+}: {
+  products: Product[];
+  value: string;
+  onSelect: (name: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const selected = products.find((p) => p.name === value);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  if (products.length === 0) {
+    return (
+      <div className="sm:col-span-2">
+        <label className="mb-1.5 block text-sm font-medium text-slate-700">
+          Product
+        </label>
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onSelect(e.target.value)}
+          required
+          className="w-full rounded-lg border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 transition-colors focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          placeholder="e.g. Fireworks Bundle"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative sm:col-span-2" ref={ref}>
+      <label className="mb-1.5 block text-sm font-medium text-slate-700">
+        Product
+      </label>
+      {/* Hidden input for form validation */}
+      <input
+        type="text"
+        value={value}
+        required
+        className="sr-only"
+        tabIndex={-1}
+        onChange={() => {}}
+        onInvalid={(e) => {
+          e.preventDefault();
+          setOpen(true);
+        }}
+      />
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center gap-3 rounded-lg border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-left text-sm transition-colors hover:bg-white focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+      >
+        {selected ? (
+          <>
+            {selected.image ? (
+              <img
+                src={selected.image}
+                alt={selected.name}
+                className="h-8 w-8 rounded-md border border-slate-200 object-cover"
+              />
+            ) : (
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-400">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
+                </svg>
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <span className="font-medium text-slate-900">{selected.name}</span>
+              <span className="ml-2 text-slate-500">
+                {new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" }).format(selected.price)}
+              </span>
+            </div>
+          </>
+        ) : (
+          <span className="text-slate-400">Select a product...</span>
+        )}
+        <svg className="ml-auto h-4 w-4 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+        </svg>
+      </button>
+
+      {open && (
+        <div className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
+          {products.map((p) => (
+            <button
+              type="button"
+              key={p.id}
+              disabled={p.stock === 0}
+              onClick={() => {
+                onSelect(p.name);
+                setOpen(false);
+              }}
+              className={`flex w-full items-center gap-3 px-3.5 py-2.5 text-left text-sm transition-colors ${
+                p.stock === 0
+                  ? "cursor-not-allowed opacity-50"
+                  : p.name === value
+                    ? "bg-blue-50"
+                    : "hover:bg-slate-50"
+              }`}
+            >
+              {p.image ? (
+                <img
+                  src={p.image}
+                  alt={p.name}
+                  className="h-9 w-9 rounded-md border border-slate-200 object-cover"
+                />
+              ) : (
+                <div className="flex h-9 w-9 items-center justify-center rounded-md bg-slate-100 text-slate-400">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
+                  </svg>
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-slate-900">{p.name}</div>
+                <div className="text-xs text-slate-500">
+                  {new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" }).format(p.price)}
+                  {p.stock === 0
+                    ? " · Out of stock"
+                    : ` · ${p.stock} in stock`}
+                </div>
+              </div>
+              {p.name === value && (
+                <svg className="h-4 w-4 shrink-0 text-blue-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                </svg>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface CreateOrderModalProps {
   products: Product[];
@@ -135,42 +283,11 @@ export default function CreateOrderModal({
             </div>
 
             {/* Product */}
-            <div className="sm:col-span-2">
-              <label className="mb-1.5 block text-sm font-medium text-slate-700">
-                Product
-              </label>
-              {products.length > 0 ? (
-                <select
-                  value={product}
-                  onChange={(e) => handleProductSelect(e.target.value)}
-                  required
-                  className="w-full rounded-lg border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 transition-colors focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                >
-                  <option value="">Select a product...</option>
-                  {products.map((p) => (
-                    <option key={p.id} value={p.name} disabled={p.stock === 0}>
-                      {p.name} —{" "}
-                      {new Intl.NumberFormat("en-PH", {
-                        style: "currency",
-                        currency: "PHP",
-                      }).format(p.price)}
-                      {p.stock === 0
-                        ? " (Out of stock)"
-                        : ` (${p.stock} in stock)`}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  type="text"
-                  value={product}
-                  onChange={(e) => setProduct(e.target.value)}
-                  required
-                  className="w-full rounded-lg border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 transition-colors focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                  placeholder="e.g. Fireworks Bundle"
-                />
-              )}
-            </div>
+            <ProductSelector
+              products={products}
+              value={product}
+              onSelect={handleProductSelect}
+            />
 
             {/* Quantity */}
             <div>
@@ -180,19 +297,45 @@ export default function CreateOrderModal({
               <input
                 type="number"
                 value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === "") {
+                    setQuantity("");
+                    return;
+                  }
+                  const num = Number(val);
+                  if (availableStock !== null && num > availableStock) {
+                    setQuantity(String(availableStock));
+                  } else {
+                    setQuantity(val);
+                  }
+                }}
                 required
                 min={1}
                 max={availableStock !== null ? availableStock : undefined}
-                className="w-full rounded-lg border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 transition-colors focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                className={`w-full rounded-lg border px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 transition-colors focus:outline-none focus:ring-2 ${
+                  availableStock !== null && Number(quantity) > 0 && Number(quantity) === availableStock
+                    ? "border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500/20"
+                    : "border-slate-300 bg-slate-50 focus:border-blue-500 focus:bg-white focus:ring-blue-500/20"
+                }`}
                 placeholder="0"
               />
               {availableStock !== null && (
-                <p className="mt-1.5 text-xs text-slate-400">
-                  {availableStock === 0
-                    ? "This product is out of stock."
-                    : `${availableStock} available in stock`}
-                </p>
+                <>
+                  {availableStock === 0 ? (
+                    <p className="mt-1.5 text-xs font-medium text-red-500">
+                      This product is out of stock.
+                    </p>
+                  ) : Number(quantity) === availableStock ? (
+                    <p className="mt-1.5 text-xs font-medium text-red-500">
+                      Maximum order reached — only {availableStock} in stock.
+                    </p>
+                  ) : (
+                    <p className="mt-1.5 text-xs text-slate-400">
+                      {availableStock} available in stock
+                    </p>
+                  )}
+                </>
               )}
             </div>
 

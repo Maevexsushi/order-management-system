@@ -51,10 +51,12 @@ export async function POST(request: Request) {
   }
 
   const orders = await getOrders();
+  const matchedProduct = products[productIndex] ?? products.find((p) => p.name === product);
   const newOrder: Order = {
     id: generateId(orders),
     customerName,
     product,
+    productImage: matchedProduct?.image || "",
     quantity: Number(quantity),
     price: Number(price),
     total: Number(quantity) * Number(price),

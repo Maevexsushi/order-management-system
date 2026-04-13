@@ -13,6 +13,7 @@
     "id": "ORD-002",
     "customerName": "Juan",
     "product": "Sparkler Pack",
+    "productImage": "/uploads/1775936186641-7n0ivl.jpeg",
     "quantity": 5,
     "price": 150,
     "total": 750,
@@ -38,5 +39,27 @@
     "total": 10000,
     "status": "Pending",
     "createdAt": "2026-04-11"
+  },
+  {
+    "id": "ORD-005",
+    "customerName": "gyg",
+    "product": "idlat atul",
+    "productImage": "/uploads/1775936337541-r2b02p.jpeg",
+    "quantity": 8,
+    "price": 300,
+    "total": 2400,
+    "status": "Pending",
+    "createdAt": "2026-04-13"
+  },
+  {
+    "id": "ORD-006",
+    "customerName": "kkk",
+    "product": "baho",
+    "productImage": "/uploads/1775936076522-fsa7j8.png",
+    "quantity": 1,
+    "price": 1000,
+    "total": 1000,
+    "status": "Pending",
+    "createdAt": "2026-04-13"
   }
 ]
